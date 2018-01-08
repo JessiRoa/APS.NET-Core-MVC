@@ -5,13 +5,22 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RoutingWebbApp.Models;
+using Microsoft.AspNetCore.Authorization;
+using RoutingWebbApp.Services;
 
 namespace RoutingWebbApp.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        private IEmailSender emailSender;
+        public HomeController(IEmailSender _emailSender)
         {
+            emailSender = _emailSender;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            await emailSender.SendEmailAsync("test@test.com", "Index was executed", "I am not happy");
             return View();
         }
 
@@ -22,6 +31,7 @@ namespace RoutingWebbApp.Controllers
             return View();
         }
 
+        [Authorize(Roles="Admin")]
         public IActionResult Contact()
         {
             ViewData["Message"] = "Your contact page.";
